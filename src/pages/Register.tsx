@@ -32,8 +32,11 @@ export function Register() {
     return (
       <div className="auth-page">
         <div className="card narrow">
-          <h1>Konfiguration fehlt</h1>
-          <p className="muted">Siehe README für <code>.env</code>.</p>
+          <h1>Supabase ist nicht konfiguriert</h1>
+          <p className="muted">
+            Erstelle eine <code>.env</code> mit den Supabase-Variablen aus der README, bevor du dich
+            registrierst.
+          </p>
         </div>
       </div>
     )
@@ -42,13 +45,16 @@ export function Register() {
   return (
     <div className="auth-page">
       <Link to="/" className="back-link">
-        <ArrowLeft size={18} /> Start
+        <ArrowLeft size={18} /> Zur Startseite
       </Link>
       <div className="card narrow">
-        <h1>Registrieren</h1>
+        <h1>Konto anlegen</h1>
+        <p className="muted small">
+          Nach der Registrierung kannst du die Freischaltung abschließen und Organizer voll nutzen.
+        </p>
         <form onSubmit={submit} className="form">
           <label>
-            Name
+            Anzeigename
             <input
               value={fullName}
               onChange={(ev) => setFullName(ev.target.value)}
@@ -78,11 +84,11 @@ export function Register() {
           </label>
           {error && <p className="error">{error}</p>}
           <button type="submit" className="btn primary block" disabled={busy}>
-            {busy ? '…' : 'Konto anlegen'}
+            {busy ? 'Wird angelegt…' : 'Registrieren'}
           </button>
         </form>
         <p className="muted small">
-          Bereits dabei? <Link to="/login">Anmelden</Link>
+          Schon registriert? <Link to="/login">Zur Anmeldung</Link>
         </p>
       </div>
     </div>

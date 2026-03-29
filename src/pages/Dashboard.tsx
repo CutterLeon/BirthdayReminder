@@ -16,10 +16,10 @@ export function Dashboard() {
   const { profile, refresh } = useProfile(user?.id)
   const [tasks, setTasks] = useState<Task[]>([])
   const [birthdays, setBirthdays] = useState<Birthday[]>([])
-  const [tz, setTz] = useState(profile?.default_timezone ?? 'Europe/Berlin')
+  const [tzDraft, setTzDraft] = useState(profile?.default_timezone ?? 'Europe/Berlin')
 
   useEffect(() => {
-    if (profile?.default_timezone) setTz(profile.default_timezone)
+    if (profile?.default_timezone) setTzDraft(profile.default_timezone)
   }, [profile?.default_timezone])
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export function Dashboard() {
 
   const saveTz = async () => {
     if (!user?.id) return
-    await supabase.from('profiles').update({ default_timezone: tz }).eq('id', user.id)
+    await supabase.from('profiles').update({ default_timezone: tzDraft }).eq('id', user.id)
     await refresh()
   }
 
@@ -69,15 +69,15 @@ export function Dashboard() {
   return (
     <div className="stack">
       <div className="page-header">
-        <h1>Dashboard</h1>
+        <h1>Überblick</h1>
         <p className="muted">
-          Wichtiges zuerst — Fortschritt und heutige Geburtstage.
+          Fortschritt bei den Aufgaben, dringende Termine und Geburtstage von heute.
         </p>
       </div>
 
       <div className="grid-2">
         <div className="card">
-          <h2>Fortschritt</h2>
+          <h2>Aufgaben-Fortschritt</h2>
           <div className="progress-wrap">
             <div className="progress-ring" style={{ '--p': pct } as React.CSSProperties}>
               <span>{pct}%</span>
@@ -93,20 +93,24 @@ export function Dashboard() {
           </div>
           {!canUse && (
             <p className="muted small">
-              Nach Freischaltung kannst du Aufgaben anlegen.{' '}
-              <Link to="/pricing">Zur Zahlung</Link>
+              Nach der Freischaltung kannst du hier neue Aufgaben anlegen.{' '}
+              <Link to="/pricing">Jetzt freischalten</Link>
             </p>
           )}
         </div>
 
         <div className="card">
-          <h2>Deine Zeitzone</h2>
+          <h2>Standard-Zeitzone</h2>
           <p className="muted small">
-            Für spätere Erweiterungen (z. B. Tages-Mails). Geburtstags-Mails nutzen die Zeitzone pro
-            Kontakt.
+            Wird für dein Profil gespeichert (z. B. künftige Tagesübersichten). Geburtstags-E-Mails
+            richten sich jeweils nach der Zeitzone des einzelnen Kontakts.
           </p>
           <div className="row">
-            <select value={tz} onChange={(e) => setTz(e.target.value)} className="grow">
+            <select
+              value={tzDraft}
+              onChange={(e) => setTzDraft(e.target.value)}
+              className="grow"
+            >
               {COMMON_TIMEZONES.map((z) => (
                 <option key={z} value={z}>
                   {z}

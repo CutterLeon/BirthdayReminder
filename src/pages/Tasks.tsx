@@ -9,6 +9,12 @@ import type { Database } from '../lib/database.types'
 type Task = Database['public']['Tables']['tasks']['Row']
 type Priority = 'low' | 'medium' | 'high'
 
+const PRIORITY_LABEL: Record<Priority, string> = {
+  low: 'Niedrig',
+  medium: 'Mittel',
+  high: 'Hoch',
+}
+
 const emptyForm = {
   title: '',
   description: '',
@@ -78,17 +84,19 @@ export function Tasks() {
     <div className="stack">
       <div className="page-header">
         <h1>Aufgaben</h1>
-        <p className="muted">Priorität, Fälligkeit, erledigt oder offen.</p>
+        <p className="muted">
+          Lege To-dos mit Priorität und Fälligkeit an — abhaken oder löschen, wenn du fertig bist.
+        </p>
       </div>
 
       {!canWrite && (
         <div className="banner subtle">
-          Konto nicht freigeschaltet — Aufgaben sind schreibgeschützt bis zur Zahlung.
+          Konto noch nicht freigeschaltet: Aufgaben kannst du erst nach der Zahlung bearbeiten.
         </div>
       )}
 
       <div className="card">
-        <h2>Neue Aufgabe</h2>
+        <h2>Neue Aufgabe anlegen</h2>
         <form className="form-grid" onSubmit={addTask}>
           <label className="span-2">
             Titel
@@ -133,7 +141,7 @@ export function Tasks() {
           </label>
           <div className="span-2">
             <button type="submit" className="btn primary" disabled={!canWrite}>
-              Hinzufügen
+              Aufgabe speichern
             </button>
           </div>
         </form>
@@ -141,14 +149,14 @@ export function Tasks() {
       </div>
 
       <div className="card">
-        <h2>Liste</h2>
+        <h2>Alle Aufgaben</h2>
         <div className="table-wrap">
           <table className="data-table">
             <thead>
               <tr>
                 <th>Status</th>
                 <th>Titel</th>
-                <th>Prio</th>
+                <th>Priorität</th>
                 <th>Fällig</th>
                 <th />
               </tr>
@@ -171,7 +179,9 @@ export function Tasks() {
                     )}
                   </td>
                   <td>
-                    <span className={`badge ${t.priority}`}>{t.priority}</span>
+                    <span className={`badge ${t.priority}`}>
+                      {PRIORITY_LABEL[t.priority as Priority]}
+                    </span>
                   </td>
                   <td className="muted small">
                     {t.due_at
@@ -192,7 +202,9 @@ export function Tasks() {
               ))}
             </tbody>
           </table>
-          {tasks.length === 0 && <p className="muted">Noch keine Aufgaben.</p>}
+          {tasks.length === 0 && (
+            <p className="muted">Noch keine Aufgaben — leg oben die erste an.</p>
+          )}
         </div>
       </div>
     </div>

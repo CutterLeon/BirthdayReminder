@@ -9,10 +9,11 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!supabaseConfigured) {
     return (
       <div className="card narrow">
-        <h1>Konfiguration</h1>
+        <h1>Supabase ist nicht konfiguriert</h1>
         <p>
-          Bitte <code>.env</code> mit <code>VITE_SUPABASE_URL</code> und{' '}
-          <code>VITE_SUPABASE_ANON_KEY</code> anlegen.
+          Lege eine <code>.env</code> mit <code>VITE_SUPABASE_URL</code> und einem gültigen
+          Publishable-Key (<code>VITE_SUPABASE_ANON_KEY</code> oder{' '}
+          <code>VITE_SUPABASE_PUBLISHABLE_DEFAULT_KEY</code>) an.
         </p>
       </div>
     )
@@ -21,7 +22,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="center muted" style={{ padding: '3rem' }}>
-        Laden…
+        Wird geladen…
       </div>
     )
   }

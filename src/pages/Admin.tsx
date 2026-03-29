@@ -65,8 +65,8 @@ export function Admin() {
     const tmp = (data as { temporary_password?: string })?.temporary_password
     setMsg(
       tmp
-        ? `Nutzer angelegt. Temporäres Passwort: ${tmp}`
-        : 'Nutzer angelegt und freigeschaltet.',
+        ? `Konto erstellt. Temporäres Passwort (einmal notieren): ${tmp}`
+        : 'Konto erstellt und freigeschaltet.',
     )
     setInvite({ email: '', full_name: '', password: '', make_admin: false })
     await load()
@@ -76,11 +76,14 @@ export function Admin() {
     <div className="stack">
       <div className="page-header">
         <h1>Administration</h1>
-        <p className="muted">Nutzer einladen und Konten manuell freischalten.</p>
+        <p className="muted">
+          Nutzer anlegen, temporäre Passwörter vergeben und Konten bei Bedarf manuell aktivieren oder
+          deaktivieren.
+        </p>
       </div>
 
       <div className="card">
-        <h2>Einladung / manuelles Konto</h2>
+        <h2>Neuen Nutzer anlegen</h2>
         <form className="form-grid" onSubmit={sendInvite}>
           <label className="span-2">
             E-Mail
@@ -99,7 +102,7 @@ export function Admin() {
             />
           </label>
           <label className="span-2">
-            Passwort (leer = automatisch generiert)
+            Passwort (optional — leer lassen für automatisch generiertes Passwort)
             <input
               type="text"
               autoComplete="new-password"
@@ -115,10 +118,10 @@ export function Admin() {
                 setInvite({ ...invite, make_admin: ev.target.checked })
               }
             />
-            Als Admin anlegen
+            Direkt als Administrator anlegen
           </label>
           <button type="submit" className="btn primary" disabled={busy}>
-            {busy ? '…' : 'Anlegen und aktivieren'}
+            {busy ? 'Wird angelegt…' : 'Nutzer anlegen und freischalten'}
           </button>
         </form>
         {msg && <p className="ok">{msg}</p>}
@@ -126,14 +129,14 @@ export function Admin() {
       </div>
 
       <div className="card">
-        <h2>Alle Profile</h2>
+        <h2>Alle Nutzer</h2>
         <div className="table-wrap">
           <table className="data-table">
             <thead>
               <tr>
                 <th>E-Mail</th>
                 <th>Rolle</th>
-                <th>Aktiv</th>
+                <th>Freigeschaltet</th>
                 <th />
               </tr>
             </thead>
@@ -142,14 +145,14 @@ export function Admin() {
                 <tr key={p.id}>
                   <td>{p.email}</td>
                   <td>{p.role}</td>
-                  <td>{p.is_active ? 'ja' : 'nein'}</td>
+                  <td>{p.is_active ? 'Ja' : 'Nein'}</td>
                   <td>
                     <button
                       type="button"
                       className="btn secondary small"
                       onClick={() => void toggleActive(p)}
                     >
-                      Aktiv umschalten
+                      Freischaltung umschalten
                     </button>
                   </td>
                 </tr>
@@ -161,7 +164,7 @@ export function Admin() {
 
       <div className="card muted small">
         <p>
-          Ersten Admin festlegen: in der Supabase-SQL-Konsole{' '}
+          Ersten Administrator festlegen: in der Supabase-SQL-Konsole z. B.{' '}
           <code>
             update profiles set role = &apos;admin&apos;, is_active = true where email =
             &apos;du@example.com&apos;;

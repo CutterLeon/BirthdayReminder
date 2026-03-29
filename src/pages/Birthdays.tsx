@@ -95,19 +95,20 @@ export function Birthdays() {
       <div className="page-header">
         <h1>Geburtstage</h1>
         <p className="muted">
-          E-Mail-Erinnerungen um 06:00 in der <strong>Zeitzone des Kontakts</strong> (nicht GPS live —
-          Ort einmal erfassen oder Zeitzone wählen).
+          Erinnerungen per E-Mail um <strong>06:00 Uhr</strong> in der{' '}
+          <strong>Zeitzone des Kontakts</strong>. Ort und Land helfen beim Vorschlag der Zeitzone —
+          es wird nicht live getrackt.
         </p>
       </div>
 
       {!canWrite && (
         <div className="banner subtle">
-          Konto nicht freigeschaltet — Geburtstage sind schreibgeschützt.
+          Konto noch nicht freigeschaltet: Geburtstage kannst du erst nach der Zahlung bearbeiten.
         </div>
       )}
 
       <div className="card">
-        <h2>Kontakt anlegen</h2>
+        <h2>Neuen Kontakt speichern</h2>
         <form className="form-grid" onSubmit={submit}>
           <label className="span-2">
             Anzeigename
@@ -155,7 +156,7 @@ export function Birthdays() {
             />
           </label>
           <label className="span-2">
-            Stadt (für Zeitzonen-Vorschlag)
+            Stadt (für Zeitzone vorschlagen)
             <input
               value={form.city}
               onChange={(ev) => setForm({ ...form, city: ev.target.value })}
@@ -177,7 +178,7 @@ export function Birthdays() {
               disabled={!canWrite || geoBusy}
               onClick={() => void resolveTz()}
             >
-              {geoBusy ? '…' : 'Zeitzone vorschlagen'}
+              {geoBusy ? 'Suche…' : 'Zeitzone aus Ort ableiten'}
             </button>
           </div>
           <label className="span-2">
@@ -203,11 +204,11 @@ export function Birthdays() {
               }
               disabled={!canWrite}
             />
-            E-Mail-Erinnerung (06:00 lokale Zeit des Kontakts)
+            E-Mail am Geburtstag (06:00 Uhr in der Zeitzone des Kontakts)
           </label>
           <div className="span-2">
             <button type="submit" className="btn primary" disabled={!canWrite}>
-              Speichern
+              Kontakt hinzufügen
             </button>
           </div>
         </form>
@@ -215,7 +216,7 @@ export function Birthdays() {
       </div>
 
       <div className="card">
-        <h2>Einträge</h2>
+        <h2>Deine Kontakte</h2>
         <ul className="list-tight">
           {rows.map((r) => (
             <li key={r.id} className="birthday-row">
@@ -228,7 +229,7 @@ export function Birthdays() {
                 {r.notify_email ? (
                   <span className="badge ok small">E-Mail</span>
                 ) : (
-                  <span className="badge muted small">Kein Mail</span>
+                  <span className="badge muted small">Ohne E-Mail</span>
                 )}
               </div>
               <button
@@ -242,7 +243,9 @@ export function Birthdays() {
             </li>
           ))}
         </ul>
-        {rows.length === 0 && <p className="muted">Noch keine Geburtstage.</p>}
+        {rows.length === 0 && (
+          <p className="muted">Noch keine Einträge — füge oben den ersten Kontakt hinzu.</p>
+        )}
       </div>
     </div>
   )

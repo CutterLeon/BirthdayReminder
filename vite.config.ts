@@ -1,9 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+const base = process.env.TAURI_ENV_PLATFORM ? './' : '/'
+
 export default defineConfig({
   plugins: [react()],
-  base: './',
+  base,
   clearScreen: false,
   server: {
     host: '127.0.0.1',

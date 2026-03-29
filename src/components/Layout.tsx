@@ -53,8 +53,9 @@ export function Layout() {
       </header>
       {inactive && (
         <div className="banner">
-          <strong>Konto noch nicht freigeschaltet.</strong> Schließe das Abonnement ab,{' '}
-          <Link to="/pricing">zur Zahlung</Link>.
+          <strong>Konto noch nicht freigeschaltet.</strong>{' '}
+          <Link to="/pricing">Freischaltung abschließen</Link>, um Aufgaben und Geburtstage zu
+          bearbeiten.
         </div>
       )}
       <main className="main">
