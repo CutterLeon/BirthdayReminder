@@ -1,0 +1,28 @@
+# Für lokale Entwicklung: supabase start
+# https://supabase.com/docs/guides/cli/config
+
+project_id = "birthday-reminder"
+
+[api]
+enabled = true
+
+[db]
+major_version = 15
+
+[functions.create-checkout-session]
+verify_jwt = true
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.daily-reminders]
+verify_jwt = false
+
+[functions.resolve-timezone]
+verify_jwt = true
+
+[functions.admin-invite-user]
+verify_jwt = true
+
+[functions.due-items]
+verify_jwt = true

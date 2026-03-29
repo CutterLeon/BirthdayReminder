@@ -1,0 +1,23 @@
+/** Häufige IANA-Zeitzonen für Auswahlfelder */
+export const COMMON_TIMEZONES = [
+  'Europe/Berlin',
+  'Europe/Vienna',
+  'Europe/Zurich',
+  'Europe/Amsterdam',
+  'Europe/Paris',
+  'Europe/London',
+  'Europe/Madrid',
+  'Europe/Rome',
+  'America/New_York',
+  'America/Chicago',
+  'America/Denver',
+  'America/Los_Angeles',
+  'America/Toronto',
+  'America/Sao_Paulo',
+  'Asia/Tokyo',
+  'Asia/Singapore',
+  'Asia/Dubai',
+  'Australia/Sydney',
+  'Pacific/Auckland',
+  'UTC',
+] as const
