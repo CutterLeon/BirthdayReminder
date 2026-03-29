@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "desktop:dev": "tauri dev",
-    "desktop:build": "tauri build"
+    "desktop:build": "tauri build",
+    "test:e2e": "py scripts/with_server.py --server \"npm run dev -- --port 5179 --host 127.0.0.1\" --port 5179 --timeout 120 -- py scripts/e2e_smoke.py"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.0.0",

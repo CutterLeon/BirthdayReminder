@@ -44,3 +44,15 @@ npm run desktop:build
 ## Statisches Hosting
 
 `npm run build` erzeugt `dist/`.
+
+## E2E-Smoke (Playwright)
+
+Python 3 mit pip, dann:
+
+```bash
+py -m pip install -r requirements-test.txt
+py -m playwright install chromium
+npm run test:e2e
+```
+
+Startet Vite auf Port **5179** (vermeidet Konflikte), fÃ¼hrt `scripts/e2e_smoke.py` aus und beendet den Server inkl. Kindprozessen (Windows: `taskkill /T`).
