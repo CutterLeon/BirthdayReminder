@@ -1,24 +1,13 @@
 {
- master
-  "name": "birthdayreminder",
-  "compatibility_date": "2026-03-30",
-  "assets": {
-    "directory": "./dist"
-  }
-}
-
-=======
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "birthdayreminder",
-  "compatibility_date": "2025-09-27",
+  "compatibility_date": "2026-03-30",
   "observability": {
     "enabled": true
   },
   "assets": {
+    "directory": "./dist",
     "not_found_handling": "single-page-application"
   },
-  "compatibility_flags": [
-    "nodejs_compat"
-  ]
+  "compatibility_flags": ["nodejs_compat"]
 }
- main
