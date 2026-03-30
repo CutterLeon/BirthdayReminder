@@ -10,12 +10,20 @@ import type { Database } from '../lib/database.types'
 
 type Task = Database['public']['Tables']['tasks']['Row']
 type Birthday = Database['public']['Tables']['birthday_contacts']['Row']
+type Timebox = Database['public']['Tables']['task_timeboxes']['Row']
+type MonitorLink = Database['public']['Tables']['monitor_links']['Row']
+type MonitorCheck = Database['public']['Tables']['monitor_checks']['Row']
 
 export function Dashboard() {
   const { user } = useSession()
   const { profile, refresh } = useProfile(user?.id)
   const [tasks, setTasks] = useState<Task[]>([])
   const [birthdays, setBirthdays] = useState<Birthday[]>([])
+  const [timeboxes, setTimeboxes] = useState<Timebox[]>([])
+  const [monitorLinks, setMonitorLinks] = useState<MonitorLink[]>([])
+  const [monitorChecks, setMonitorChecks] = useState<Map<string, MonitorCheck>>(
+    new Map(),
+  )
   const [tz, setTz] = useState(profile?.default_timezone ?? 'Europe/Berlin')
 
   useEffect(() => {
@@ -33,6 +41,44 @@ export function Dashboard() {
       setTasks(t ?? [])
       const { data: b } = await supabase.from('birthday_contacts').select('*').eq('user_id', user.id)
       setBirthdays(b ?? [])
+
+      const dayStart = new Date()
+      dayStart.setHours(0, 0, 0, 0)
+      const dayEnd = new Date(dayStart)
+      dayEnd.setDate(dayEnd.getDate() + 1)
+      const { data: tb } = await supabase
+        .from('task_timeboxes')
+        .select('*')
+        .eq('user_id', user.id)
+        .gte('start_at', dayStart.toISOString())
+        .lt('start_at', dayEnd.toISOString())
+        .order('start_at', { ascending: true })
+      setTimeboxes(tb ?? [])
+
+      const { data: ml } = await supabase
+        .from('monitor_links')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('enabled', true)
+        .order('created_at', { ascending: false })
+      setMonitorLinks(ml ?? [])
+
+      const ids = (ml ?? []).map((l) => l.id)
+      if (ids.length > 0) {
+        const { data: c } = await supabase
+          .from('monitor_checks')
+          .select('*')
+          .in('monitor_link_id', ids)
+          .order('checked_at', { ascending: false })
+          .limit(200)
+        const map = new Map<string, MonitorCheck>()
+        for (const row of c ?? []) {
+          if (!map.has(row.monitor_link_id)) map.set(row.monitor_link_id, row)
+        }
+        setMonitorChecks(map)
+      } else {
+        setMonitorChecks(new Map())
+      }
     }
     void load()
   }, [user?.id])
@@ -45,6 +91,15 @@ export function Dashboard() {
     (t) => t.due_at && new Date(t.due_at) < new Date(),
   )
   const high = openTasks.filter((t) => t.priority === 'high')
+  const plannedMinutes = timeboxes.reduce((acc, it) => {
+    const a = new Date(it.start_at).getTime()
+    const b = new Date(it.end_at).getTime()
+    return acc + Math.max(0, Math.round((b - a) / 60_000))
+  }, 0)
+  const estOpenMinutes = openTasks.reduce(
+    (acc, t) => acc + (t.estimate_minutes ?? 0),
+    0,
+  )
 
   const now = new Date()
   const bToday = birthdays.filter((b) => {
@@ -102,7 +157,7 @@ export function Dashboard() {
         <div className="card">
           <h2>Deine Zeitzone</h2>
           <p className="muted small">
-            Für spätere Erweiterungen (z. B. Tages-Mails). Geburtstags-Mails nutzen die Zeitzone pro
+            Für spätere Erweiterungen (z. B. Tages-Mails). Geburtstags-Mails nutzen die Zeitzone pro
             Kontakt.
           </p>
           <div className="row">
@@ -166,6 +221,64 @@ export function Dashboard() {
           )}
           <Link to="/app/birthdays" className="btn ghost small">
             Geburtstage verwalten
+          </Link>
+        </div>
+      </div>
+
+      <div className="grid-2">
+        <div className="card">
+          <h2>Daily Plan (heute)</h2>
+          <p className="muted small">
+            Geplant: <strong>{plannedMinutes}</strong> Minuten · Offene Task-Schätzung:{' '}
+            <strong>{estOpenMinutes}</strong> Minuten
+          </p>
+          {timeboxes.length === 0 ? (
+            <p className="muted">Noch keine Blöcke geplant.</p>
+          ) : (
+            <ul className="list-tight">
+              {timeboxes.slice(0, 6).map((tb) => (
+                <li key={tb.id} className="muted small">
+                  <strong>
+                    {format(new Date(tb.start_at), 'HH:mm', { locale: de })}–
+                    {format(new Date(tb.end_at), 'HH:mm', { locale: de })}
+                  </strong>{' '}
+                  · {tb.title ?? 'Block'}
+                </li>
+              ))}
+            </ul>
+          )}
+          <Link to="/app/plan" className="btn ghost small">
+            Daily Plan öffnen
+          </Link>
+        </div>
+
+        <div className="card">
+          <h2>Heartbeat Links</h2>
+          {monitorLinks.length === 0 ? (
+            <p className="muted">Keine Links angelegt.</p>
+          ) : (
+            <ul className="list-tight">
+              {monitorLinks.slice(0, 8).map((l) => {
+                const c = monitorChecks.get(l.id)
+                const ok = c?.ok ?? false
+                const status = c?.status_code ?? null
+                const cls = ok ? 'badge ok' : 'badge warn'
+                return (
+                  <li key={l.id} className="row gap align-center">
+                    <span className={cls}>{status ?? '—'}</span>
+                    <a href={l.url} target="_blank" rel="noreferrer" className="grow">
+                      {l.name}
+                    </a>
+                    {c?.latency_ms != null && (
+                      <span className="muted small">{c.latency_ms}ms</span>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+          <Link to="/app/settings" className="btn ghost small">
+            Links verwalten
           </Link>
         </div>
       </div>

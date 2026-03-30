@@ -3,7 +3,16 @@ import { useSession } from '../hooks/useSession'
 import { useProfile } from '../hooks/useProfile'
 import { useTauriReminders } from '../hooks/useTauriReminders'
 import { supabase } from '../lib/supabase'
-import { CalendarDays, LayoutDashboard, ListTodo, LogOut, Shield, Sparkles } from 'lucide-react'
+import {
+  CalendarClock,
+  CalendarDays,
+  LayoutDashboard,
+  ListTodo,
+  LogOut,
+  Settings as SettingsIcon,
+  Shield,
+  Sparkles,
+} from 'lucide-react'
 
 export function Layout() {
   const { user } = useSession()
@@ -36,8 +45,14 @@ export function Layout() {
           <NavLink to="/app/tasks" className={navClass}>
             <ListTodo size={18} /> Aufgaben
           </NavLink>
+          <NavLink to="/app/plan" className={navClass}>
+            <CalendarClock size={18} /> Daily Plan
+          </NavLink>
           <NavLink to="/app/birthdays" className={navClass}>
             <CalendarDays size={18} /> Geburtstage
+          </NavLink>
+          <NavLink to="/app/settings" className={navClass}>
+            <SettingsIcon size={18} /> Einstellungen
           </NavLink>
           {profile?.role === 'admin' && (
             <NavLink to="/app/admin" className={navClass}>

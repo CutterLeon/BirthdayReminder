@@ -19,5 +19,9 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Zu aggressiv für typische Daten-Lade-Effekte in React-Apps
+      'react-hooks/set-state-in-effect': 'off',
+    },
   },
 ])

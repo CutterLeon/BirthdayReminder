@@ -10,6 +10,8 @@ import { Dashboard } from './pages/Dashboard'
 import { Tasks } from './pages/Tasks'
 import { Birthdays } from './pages/Birthdays'
 import { Admin } from './pages/Admin'
+import { DailyPlan } from './pages/DailyPlan'
+import { Settings } from './pages/Settings'
 
 export default function App() {
   return (
@@ -31,6 +33,8 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="tasks" element={<Tasks />} />
           <Route path="birthdays" element={<Birthdays />} />
+          <Route path="plan" element={<DailyPlan />} />
+          <Route path="settings" element={<Settings />} />
           <Route path="admin" element={<Admin />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

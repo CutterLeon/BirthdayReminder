@@ -24,6 +24,8 @@ dist-ssr
 *.sln
 *.sw?
 
+.cursor/
+
 .env
 app-icon.png
 icon512.png

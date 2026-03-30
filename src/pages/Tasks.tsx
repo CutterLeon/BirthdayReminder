@@ -14,6 +14,7 @@ const emptyForm = {
   description: '',
   priority: 'medium' as Priority,
   due_at: '',
+  estimate_minutes: '',
 }
 
 export function Tasks() {
@@ -46,12 +47,19 @@ export function Tasks() {
     if (!user?.id || !canWrite) return
     setError(null)
     const due = form.due_at ? new Date(form.due_at).toISOString() : null
+    const estimate =
+      form.estimate_minutes.trim() === '' ? null : Number(form.estimate_minutes)
+    if (estimate !== null && (!Number.isFinite(estimate) || estimate < 0)) {
+      setError('Schätzung muss eine Zahl ≥ 0 sein.')
+      return
+    }
     const { error: e2 } = await supabase.from('tasks').insert({
       user_id: user.id,
       title: form.title.trim(),
       description: form.description.trim() || null,
       priority: form.priority,
       due_at: due,
+      estimate_minutes: estimate,
     })
     if (e2) {
       setError(e2.message)
@@ -131,6 +139,20 @@ export function Tasks() {
               disabled={!canWrite}
             />
           </label>
+          <label>
+            Schätzung (Min)
+            <input
+              type="number"
+              min={0}
+              inputMode="numeric"
+              value={form.estimate_minutes}
+              onChange={(ev) =>
+                setForm({ ...form, estimate_minutes: ev.target.value })
+              }
+              placeholder="z. B. 30"
+              disabled={!canWrite}
+            />
+          </label>
           <div className="span-2">
             <button type="submit" className="btn primary" disabled={!canWrite}>
               Hinzufügen
@@ -150,6 +172,7 @@ export function Tasks() {
                 <th>Titel</th>
                 <th>Prio</th>
                 <th>Fällig</th>
+                <th>Schätzung</th>
                 <th />
               </tr>
             </thead>
@@ -177,6 +200,9 @@ export function Tasks() {
                     {t.due_at
                       ? format(new Date(t.due_at), 'dd.MM.yyyy HH:mm', { locale: de })
                       : '—'}
+                  </td>
+                  <td className="muted small">
+                    {t.estimate_minutes != null ? `${t.estimate_minutes} min` : '—'}
                   </td>
                   <td>
                     <button
